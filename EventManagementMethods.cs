@@ -11,8 +11,19 @@ namespace Event_Management_Assignement___Shubham_Dikole
     {
         public void CreateEvent(EventManager eventManager)
         {
-            Console.Write("Enter Event Name: ");
-            string name = Console.ReadLine();
+
+            string name;
+            do
+            {
+                Console.Write("Enter Event Name (required) : ");
+                name = Console.ReadLine().Trim();
+
+                if (string.IsNullOrEmpty(name))
+                {
+                    Console.WriteLine("Event Name cannot be empty. Please enter a valid name.");
+                }
+
+            } while (string.IsNullOrEmpty(name));
 
             Console.Write("Enter Description (optional): ");
             string description = Console.ReadLine();
@@ -36,15 +47,25 @@ namespace Event_Management_Assignement___Shubham_Dikole
             Console.Write("Enter Location (optional): ");
             string location = Console.ReadLine();
 
-            var newEvent = eventManager.CreateEvent(name, description, date, location);
-            Console.WriteLine("Event created successfully!");
-            Console.WriteLine(newEvent);
+            if (ConfirmSave())
+            {
+                var newEvent = eventManager.CreateEvent(name, description, date, location);
+                Console.WriteLine("Event created successfully!");
+                Console.WriteLine(newEvent);
+            }
+            else
+            {
+                Console.WriteLine("Save operation canceled.");
+                return;
+            }
+
         }
 
         public void ListEvents(EventManager eventManager)
         {
-            Console.Write("Enter sorting option (date, name or leave blank): ");
+            Console.Write("Enter sorting option (date, name or leave blank or type 'back' to return to menu ): ");
             string sortBy = Console.ReadLine();
+            if (BackToMenu(sortBy)) return;
             var events = eventManager.ListEvents(sortBy);
 
             if (events.Count == 0)
@@ -60,12 +81,13 @@ namespace Event_Management_Assignement___Shubham_Dikole
             }
         }
 
-      
+
 
         public void SearchEvents(EventManager eventManager)
         {
-            Console.Write("Enter keyword to search: ");
+            Console.Write("Enter keyword to search(or type 'back' to return to menu): ");
             string keyword = Console.ReadLine();
+            if (BackToMenu(keyword)) return;
 
             var events = eventManager.SearchEvents(keyword);
 
@@ -82,132 +104,169 @@ namespace Event_Management_Assignement___Shubham_Dikole
             }
         }
 
-        public DateTime? ParseDate(string input)
-        {
-            try
-            {
-                if (!string.IsNullOrEmpty(input) && DateTime.TryParseExact(input, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
-                {
-                    return date;
-                }
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine("Invalid date format.");
-            }
-            return null;
-        }
 
         public void GetEvent(EventManager eventManager)
         {
-            Console.Write("Enter the Event ID to view: ");
-            if (int.TryParse(Console.ReadLine(), out int id))
+            while (true)
             {
-                EventManagementEntity evnt = eventManager.GetEvent(id);
-                if (evnt != null)
+                Console.Write("Enter the Event ID to view (or type 'back' to return to menu): ");
+                string input = Console.ReadLine();
+                if (BackToMenu(input)) return;
+                if (int.TryParse(input, out int id))
                 {
-                    Console.WriteLine(evnt.DetailedInfo());
+                    EventManagementEntity evnt = eventManager.GetEvent(id);
+                    if (evnt != null)
+                    {
+                        Console.WriteLine(evnt.DetailedInfo());
+                    }
+                    else
+                    {
+                        Console.WriteLine("Event not found.");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Event not found.");
+                    Console.WriteLine("Invalid input. Please enter a valid Event ID.");
                 }
-            }
-            else
-            {
-                Console.WriteLine("Invalid input. Please enter a valid Event ID.");
             }
         }
 
         public void DeleteEvent(EventManager eventManager)
         {
-            Console.Write("Enter the Event ID to delete: ");
-            if (int.TryParse(Console.ReadLine(), out int id))
+            while (true)
             {
-                bool deleted = eventManager.DeleteEvent(id);
-                if (deleted)
+                Console.Write("Enter the Event ID to delete (or type 'back' to return to menu): ");
+                string input = Console.ReadLine();
+                if (BackToMenu(input)) return;
+                if (int.TryParse(input, out int id))
                 {
-                    Console.WriteLine("Event deleted successfully!");
+                    Console.Write("Do you really want to delete (Y/N)?: ");
+                    if (ConfirmSave())
+                    {
+                        bool deleted = eventManager.DeleteEvent(id);
+                        if (deleted)
+                        {
+                            Console.WriteLine("Event deleted successfully!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Event not found or could not be deleted.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Delete operation canceled.");
+                        return;
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Event not found or could not be deleted.");
+                    Console.WriteLine("Invalid input. Please enter a valid Event ID.");
                 }
-            }
-            else
-            {
-                Console.WriteLine("Invalid input. Please enter a valid Event ID.");
             }
         }
 
         public void UpdateEvent(EventManager eventManager)
         {
-            Console.Write("Enter the Event ID to update: ");
-            if (int.TryParse(Console.ReadLine(), out int id))
+            while (true)
             {
-                EventManagementEntity evnt = eventManager.GetEvent(id);
-                if (evnt != null)
+                Console.Write("Enter the Event ID to update (or type 'back' to return to menu): ");
+                string input = Console.ReadLine();
+                if (BackToMenu(input)) return;
+
+                if (int.TryParse(input, out int id))
                 {
-                    Console.WriteLine("Leave fields blank to keep current values.");
+                    EventManagementEntity evnt = eventManager.GetEvent(id);
 
-                    Console.Write("Enter new Event Name (leave empty to keep current): ");
-                    string name = Console.ReadLine();
-                    if (string.IsNullOrWhiteSpace(name))
+                    if (evnt != null)
                     {
-                        name = evnt.Name;
-                    }
 
-                    Console.Write("Enter new Description (leave empty to keep current): ");
-                    string description = Console.ReadLine();
-                    if (string.IsNullOrWhiteSpace(description))
-                    {
-                        description = evnt.Description;
-                    }
-
-                    DateTime? date = null;
-                    Console.Write("Enter new Date (yyyy-MM-dd) or leave blank to keep current: ");
-                    string dateInput = Console.ReadLine();
-                    if (!string.IsNullOrWhiteSpace(dateInput))
-                    {
-                        if (DateTime.TryParse(dateInput, out DateTime parsedDate))
+                        Console.Write("\nEnter new Event Name (leave empty to keep current): ");
+                        string name = Console.ReadLine();
+                        if (string.IsNullOrWhiteSpace(name))
                         {
-                            date = parsedDate;
+                            name = evnt.Name;
+                        }
+
+                        Console.Write("Enter new Description (leave empty to keep current): ");
+                        string description = Console.ReadLine();
+                        if (string.IsNullOrWhiteSpace(description))
+                        {
+                            description = evnt.Description;
+                        }
+
+                        DateTime? date = null;
+                        Console.Write("\nEnter new Date (yyyy-MM-dd) (leave empty to keep current): ");
+                        string dateInput = Console.ReadLine();
+                        if (!string.IsNullOrWhiteSpace(dateInput))
+                        {
+                            if (DateTime.TryParse(dateInput, out DateTime parsedDate))
+                            {
+                                date = parsedDate;
+                            }
+                            else
+                            {
+                                Console.WriteLine("\nInvalid date format. Keeping the current date.");
+                                date = evnt.Date;
+                            }
+                        }
+
+                        Console.Write("\nEnter new Location (leave empty to keep current): ");
+                        string location = Console.ReadLine();
+                        if (string.IsNullOrWhiteSpace(location))
+                        {
+                            location = evnt.Location;
+                        }
+                        if (!ConfirmSave())
+                        {
+                            return;
+                        }
+                        bool updated = eventManager.UpdateEvent(id, name, description, date, location);
+                        if (updated)
+                        {
+                            Console.WriteLine("Event updated successfully!");
                         }
                         else
                         {
-                            Console.WriteLine("Invalid date format. Keeping the current date.");
-                            date = evnt.Date;
+                            Console.WriteLine("\nFailed to update event. Please try again.");
                         }
-                    }
-
-                    Console.Write("Enter new Location (leave empty to keep current): ");
-                    string location = Console.ReadLine();
-                    if (string.IsNullOrWhiteSpace(location))
-                    {
-                        location = evnt.Location;
-                    }
-
-                    bool updated = eventManager.UpdateEvent(id, name, description, date, location);
-                    if (updated)
-                    {
-                        Console.WriteLine("Event updated successfully!");
                     }
                     else
                     {
-                        Console.WriteLine("Failed to update event. Please try again.");
+                        Console.WriteLine("Event not found.");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("Event not found.");
+                    Console.WriteLine("Invalid input. Please enter a valid Event ID.");
                 }
             }
-            else
-            {
-                Console.WriteLine("Invalid input. Please enter a valid Event ID.");
-            }
+        }
+        private bool BackToMenu(string input)
+        {
+            return input.Trim().ToLower() == "back";
         }
 
+        private bool ConfirmSave()
+        {
+            while (true)
+            {
+                Console.Write("Do you want to confirm you selection? (yes/no): ");
+                string input = Console.ReadLine().Trim().ToLower();
 
+                if (input == "yes")
+                {
+                    return true;
+                }
+                else if (input == "no")
+                {
+                    return false;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input. Please type 'yes' or 'no'.");
+                }
+            }
+        }
     }
 }

@@ -6,7 +6,7 @@ class Program
     {
         EventManager eventManager = new EventManager();
         EventManagementMethods eventCall = new EventManagementMethods();
-        Console.WriteLine("Welcome to the Enhanced Event Management System!");
+        Console.WriteLine("Welcome to the  Event Management System!");
 
         while (true)
         {
@@ -17,7 +17,7 @@ class Program
                 "\nupdate" +
                 "\ndelete" +
                 "\nsearch" +
-                "\nexit):");
+                "\nexit:");
             Console.Write("> ");
             string command = Console.ReadLine()?.ToLower();
 
@@ -39,7 +39,7 @@ class Program
                         break;
                     case "delete":
                         eventCall.DeleteEvent(eventManager);
-                        break;                   
+                        break;
                     case "search":
                         eventCall.SearchEvents(eventManager);
                         break;
