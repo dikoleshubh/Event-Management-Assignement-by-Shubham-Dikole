@@ -20,7 +20,11 @@ The Event Management System is a command-line program built in C# that allows us
 The system is designed to handle invalid inputs gracefully. Here are some common scenarios:
 
 1.Invalid Event ID: If an invalid or non-numeric event ID is entered during update or delete operations, the system will prompt the user to try again.
-Invalid Date Format: When entering the event date, if the user provides an invalid date format, the system will ask them to enter the date in the correct format (yyyy-MM-dd).
-2.Empty Event Name: The system will prompt the user to provide an event name if the name is left empty during event creation.
-3.Back to Menu:At any point, users can type back to return to the main menu. This functionality is available during event creation, updating, and other operations, allowing for a smooth user experience.
-4.Exit Option:To quit the program, simply type exit at any prompt.
+
+2.Invalid Date Format: When entering the event date, if the user provides an invalid date format, the system will ask them to enter the date in the correct format (yyyy-MM-dd).
+
+3.Empty Event Name: The system will prompt the user to provide an event name if the name is left empty during event creation.
+
+4.Back to Menu:At any point, users can type back to return to the main menu. This functionality is available during event creation, updating, and other operations, allowing for a smooth user experience.
+
+5.Exit Option:To quit the program, simply type exit at any prompt.
